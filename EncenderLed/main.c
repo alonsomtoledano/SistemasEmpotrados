@@ -7,8 +7,10 @@
 
 
 int main(void){
-	SIM->SCGC5|=SIM_SCGC5_PORTB_MASK|SIM_SCGC5_PORTD_MASK;		//conectamos el reloj
+	//PASO1: CONECTAR EL RELOJ AL PUERTO
+	SIM->SCGC5|=SIM_SCGC5_PORTB_MASK|SIM_SCGC5_PORTD_MASK;		//conectamos el reloj al puerto
 	
+	//PASO 2: CONECTAR EL GPIO AL PIN DEL MICROCONTROLADOR
 	PORTD->PCR[led_azul]&=~PORT_PCR_MUX_MASK;	//ponemos a cero el campo MUX
 	PORTB->PCR[led_rojo]&=~PORT_PCR_MUX_MASK;
 	PORTB->PCR[led_verde]&=~PORT_PCR_MUX_MASK;
@@ -18,13 +20,15 @@ int main(void){
 	PORTB->PCR[led_rojo]|=PORT_PCR_MUX(1);
 	PORTB->PCR[led_verde]|=PORT_PCR_MUX(1);
 	
-	PTD->PDDR|=MASK(led_azul);
+	//PASO 3: CONFIGURAR DIRECCION
+	PTD->PDDR|=MASK(led_azul);	//configuramos direccion de entrada o salida
 	PTB->PDDR|=MASK(led_rojo)|MASK(led_verde);
 	
-	
-	PTD->PCOR=MASK(led_azul);
+	//PASO 4: R/W
+	PTD->PCOR=MASK(led_azul);	//ponemos a '0' la salida (no se enciende el led, clear)
 	PTB->PCOR=MASK(led_rojo);
 	PTB->PCOR=MASK(led_verde);
-	PTB->PSOR=MASK(led_rojo);
+	PTD->PSOR=mASK(led_azul);
+	PTB->PSOR=MASK(led_rojo);	//ponemos a '1' la salida (se enciende el led, set)
 	PTB->PSOR=MASK(led_verde);
 }
